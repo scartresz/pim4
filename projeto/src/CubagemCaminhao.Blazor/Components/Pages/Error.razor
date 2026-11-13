@@ -1,0 +1,26 @@
+﻿@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Erro</PageTitle>
+
+<h1 class="text-danger">Algo deu errado.</h1>
+<p>Não foi possível concluir a operação. Tente de novo; se o erro continuar, avise o responsável pelo sistema.</p>
+
+@* Só o código do erro aparece para o usuário. O detalhe técnico fica no log. *@
+@if (ShowRequestId)
+{
+    <p class="text-secondary">
+        Código do erro: <code>@RequestId</code>
+    </p>
+}
+
+@code{
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}
